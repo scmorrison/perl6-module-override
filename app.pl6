@@ -22,10 +22,8 @@ module FooCore {
         *$sig where { is-overridden $?PACKAGE, &?ROUTINE }) {
         override(%*ENV<overrides>{ me }, :$sig);
     }
-    multi bar(
-        $var
-    ) {
-        return $var.uc;
+    multi bar($var) {
+        $var.uc;
     }
 
     our sub special($var) {
@@ -47,7 +45,7 @@ module FooCore::Extra {
 module FooOverride {
     our proto sub bar(|) {*}
     multi bar($var) {
-        return $var.chars;
+        $var.chars;
     }
 }
 
@@ -55,9 +53,8 @@ module FooOverride {
     'FooCore::bar' => 'FooOverride::bar'
 };
 
-say FooCore::bar('Hello, Perl 6');
-say FooCore::special('Hello, Perl 6');
+say FooCore::bar('Hello, Perl 6');           # Output: 13
+say FooCore::special('Hello, Perl 6');       # Output: 13
 
 # Also uses the override version
-say FooCore::Extra::thing('Hello, Perl 6');
-
+say FooCore::Extra::thing('Hello, Perl 6');  # Output: 13
