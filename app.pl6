@@ -2,17 +2,15 @@
 
 use v6;
 
-sub me {
-    callframe(1).code.package.^name ~ '::' ~ callframe(1).code.name;
-}
-
 sub is-overridden($package, &routine) {
     %*ENV<overrides>{$package.^name ~ '::' ~ &routine.name}:exists;
 }
 
-sub override($subroutine, :$sig) {
-    my $module = split('::', $subroutine)[0];
-    &::($subroutine)(|$sig);
+sub override(:$sig) {
+    my $sub = %*ENV<overrides>{
+        callframe(1).code.package.^name ~ '::' ~ callframe(1).code.name };
+    my $module = split('::', $sub)[0];
+    &::($sub)(|$sig);
 }
 
 module FooCore {
@@ -20,7 +18,7 @@ module FooCore {
     our proto sub bar(|) {*}
     multi bar(
         *$sig where { is-overridden $?PACKAGE, &?ROUTINE }) {
-        override(%*ENV<overrides>{ me }, :$sig);
+        override(:$sig);
     }
     multi bar($var) {
         $var.uc;
