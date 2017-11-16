@@ -71,6 +71,4 @@ say FooCore::Extra::thing('Hello, Perl 6');  # Output: 13
 
 say FooCore::bar('Hello, Perl 6');           # Output: HELLO, PERL 6
 say FooCore::special('Hello, Perl 6');       # Output: HELLO, PERL 6
-
-# Also uses the override version
 say FooCore::Extra::thing('Hello, Perl 6');  # Output: HELLO, PERL 6
