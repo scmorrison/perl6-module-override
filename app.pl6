@@ -8,8 +8,11 @@ sub is-overridden($package, &routine) {
 
 sub override(:$sig) {
     my $sub = %*ENV<overrides>{
-        callframe(1).code.package.^name ~ '::' ~ callframe(1).code.name };
-    my $module = split('::', $sub)[0];
+        callframe(1).code.package.^name ~ '::' ~ callframe(1).code.name
+    };
+    # not using for inline modules
+    # my $module = split('::', $sub)[0];
+    # require ::("$module");
     &::($sub)(|$sig);
 }
 
