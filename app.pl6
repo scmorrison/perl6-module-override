@@ -1,4 +1,9 @@
 #!/usr/bin/env perl6
+#
+# The goal here is wholesale override of a module's 
+# sub regardless of where it is called from even if
+# it is called from another module in the same application
+# that refers to the original version of the sub.
 
 use v6;
 
@@ -50,6 +55,7 @@ module FooOverride {
     }
 }
 
+# Set override
 %*ENV<overrides> = %{
     'FooCore::bar' => 'FooOverride::bar'
 };
@@ -59,3 +65,12 @@ say FooCore::special('Hello, Perl 6');       # Output: 13
 
 # Also uses the override version
 say FooCore::Extra::thing('Hello, Perl 6');  # Output: 13
+
+# Unset override
+%*ENV<overrides> = %{};
+
+say FooCore::bar('Hello, Perl 6');           # Output: HELLO, PERL 6
+say FooCore::special('Hello, Perl 6');       # Output: HELLO, PERL 6
+
+# Also uses the override version
+say FooCore::Extra::thing('Hello, Perl 6');  # Output: HELLO, PERL 6
