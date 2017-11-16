@@ -4,6 +4,9 @@
 # sub regardless of where it is called from even if
 # it is called from another module in the same application
 # that refers to the original version of the sub.
+#
+# In this example, FooCore::bar is the only sub that
+# is configured for overriding.
 
 use v6;
 
@@ -11,7 +14,7 @@ sub is-overridden($package, &routine) {
     %*ENV<overrides>{$package.^name ~ '::' ~ &routine.name}:exists;
 }
 
-sub override(:$sig) {
+sub override($sig) {
     my $sub = %*ENV<overrides>{
         callframe(1).code.package.^name ~ '::' ~ callframe(1).code.name
     };
@@ -24,17 +27,10 @@ sub override(:$sig) {
 module FooCore {
 
     our proto sub bar(|) {*}
-    multi bar(
-        *$sig where { is-overridden $?PACKAGE, &?ROUTINE }) {
-        override(:$sig);
-    }
-    multi bar($var) {
-        $var.uc;
-    }
+    multi bar(*$sig where {is-overridden $?PACKAGE, &?ROUTINE}){override($sig)}
+    multi bar($var) { $var.uc }
 
-    our sub special($var) {
-        bar($var);
-    }
+    our sub special($var) { bar($var) }
 
 }
 
@@ -50,9 +46,7 @@ module FooCore::Extra {
 
 module FooOverride {
     our proto sub bar(|) {*}
-    multi bar($var) {
-        $var.chars;
-    }
+    multi bar($var) { $var.chars }
 }
 
 # Set override
