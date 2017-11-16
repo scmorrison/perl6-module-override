@@ -2,17 +2,15 @@
 
 use v6;
 
-use lib 'lib';
-
-sub me is export {
+sub me {
     callframe(1).code.package.^name ~ '::' ~ callframe(1).code.name;
 }
 
-sub is-overridden($package, &routine) is export {
+sub is-overridden($package, &routine) {
     %*ENV<overrides>{$package.^name ~ '::' ~ &routine.name}:exists;
 }
 
-sub override($subroutine, :$sig) is export {
+sub override($subroutine, :$sig) {
     my $module = split('::', $subroutine)[0];
     &::($subroutine)(|$sig);
 }
@@ -39,6 +37,9 @@ module FooCore {
 module FooCore::Extra {
     
     our sub thing($var) {
+        # Isn't aware of the overrided bar.
+        # Could also be called from another 
+        # module.
         FooCore::bar($var);
     }
 }
